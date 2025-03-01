@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TransactionMS.Domain.Entities;
+using PaymentsMS.Domain.Entities;
 
-namespace TransactionMS.Infrastructure.Data
+namespace PaymentsMS.Infrastructure.Data
 {
     public class TransactionsDbContext : DbContext
     {
@@ -24,8 +24,8 @@ namespace TransactionMS.Infrastructure.Data
                 .HasColumnName("id")
                 .ValueGeneratedOnAdd();
             modelBuilder.Entity<Transactions>()
-                .Property(t => t.Reference)
-                .HasColumnName("reference");
+                .Property(t => t.StripeSessionId)
+                .HasColumnName("stripe_session_id");
             modelBuilder.Entity<Transactions>()
                 .Property(t => t.Quantity)
                 .HasColumnName("quantity");
@@ -34,12 +34,18 @@ namespace TransactionMS.Infrastructure.Data
                 .HasColumnName("transaction_type")
                 .HasConversion<string>();
             modelBuilder.Entity<Transactions>()
-                .Property(t => t.TransactionDate)
-                .HasColumnName("transaaction_date");
+                .Property(t => t.TransactionStartedDate)
+                .HasColumnName("transaction_start_date");
+            modelBuilder.Entity<Transactions>()
+                .Property(t => t.TransactionCompletedDate)
+                .HasColumnName("transaction_completed_date");
             modelBuilder.Entity<Transactions>()
                 .Property(t => t.TransactionStatus)
                 .HasColumnName("transaction_status")
                 .HasConversion<string>();
+            modelBuilder.Entity<Transactions>()
+                .Property(t => t.IdUser)
+                .HasColumnName("id_name");
 
             modelBuilder.Entity<Comissions>()
                 .Property(c => c.Id)
@@ -66,8 +72,11 @@ namespace TransactionMS.Infrastructure.Data
                 .Property(d => d.IdTournament)
                 .HasColumnName("id_tournament");
             modelBuilder.Entity<Donations>()
-                .Property(d => d.Total)
-                .HasColumnName("total");
+                .Property(d => d.IdUser)
+                .HasColumnName("id_user");
+            //modelBuilder.Entity<Donations>()
+              //  .Property(d => d.Total)
+                //.HasColumnName("total");
 
             modelBuilder.Entity<Comissions>()
                 .HasOne(c => c.Transaction)

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace TransactionMS.Application.Mapping
+namespace PaymentsMS.Application.Mapping
 {
     public class MapperProfile: Profile 
     {

@@ -1,8 +1,8 @@
 {
   "Version": 1,
-  "Hash": "jSiuSuCVqEdu4wmlK3E3KF4Q7TXgm7pltzzetEszq8I=",
-  "Source": "TransactionMS",
-  "BasePath": "_content/TransactionMS",
+  "Hash": "mzVjVbs+VSwq//+SCCUzgN2f0WKSgWBmXmPgZD+lJ3I=",
+  "Source": "PaymentsMS",
+  "BasePath": "_content/PaymentsMS",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],

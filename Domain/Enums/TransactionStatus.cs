@@ -1,14 +1,16 @@
 ﻿using System.Runtime.Serialization;
 
-namespace TransactionMS.Domain.Enums
+namespace PaymentsMS.Domain.Enums
 {
     public enum TransactionStatus
     {
-        [EnumMember(Value ="PENDING")]
-        PENDING,
-        [EnumMember(Value = "FAILED")]
-        FAILED,
-        [EnumMember(Value = "SUCCESS")]
-        SUCCESS
+        [EnumMember(Value ="pending")]
+        pending,
+        [EnumMember(Value = "canceled")]
+        canceled,
+        [EnumMember(Value = "failed")]
+        failed,
+        [EnumMember(Value = "succeeded")]
+        succeeded
     }
 }

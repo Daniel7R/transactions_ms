@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TransactionMS.Domain.Entities
+namespace PaymentsMS.Domain.Entities
 {
     public class Comissions
     {

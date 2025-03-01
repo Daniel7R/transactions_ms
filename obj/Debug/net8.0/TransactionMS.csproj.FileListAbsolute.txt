@@ -1,10 +1,3 @@
-C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\TransactionMS.csproj.AssemblyReference.cache
-C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\TransactionMS.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\TransactionMS.AssemblyInfoInputs.cache
-C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\TransactionMS.AssemblyInfo.cs
-C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\TransactionMS.csproj.CoreCompileInputs.cache
-C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\TransactionMS.MvcApplicationPartsAssemblyInfo.cs
-C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\TransactionMS.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\appsettings.Development.json
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\appsettings.json
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\TransactionMS.exe
@@ -120,6 +113,14 @@ C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\n
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\runtimes\browser\lib\net8.0\System.Text.Encodings.Web.dll
+C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\TransactionMS.csproj.AssemblyReference.cache
+C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\TransactionMS.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\TransactionMS.AssemblyInfoInputs.cache
+C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\TransactionMS.AssemblyInfo.cs
+C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\TransactionMS.csproj.CoreCompileInputs.cache
+C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\TransactionMS.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\TransactionMS.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\TransactionMS.sourcelink.json
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\staticwebassets.build.json
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\staticwebassets\msbuild.TransactionMS.Microsoft.AspNetCore.StaticWebAssets.props

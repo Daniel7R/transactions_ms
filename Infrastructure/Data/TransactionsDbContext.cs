@@ -61,6 +61,10 @@ namespace PaymentsMS.Infrastructure.Data
                 .Property(c => c.Total)
                 .HasColumnName("total");
 
+            modelBuilder.Entity<Comissions>()
+                .HasIndex(c => c.IdTransaction)
+                .IsUnique();
+
             modelBuilder.Entity<Donations>()
                 .Property(d => d.Id)
                 .HasColumnName("id")

@@ -9,6 +9,6 @@ namespace PaymentsMS.Application.Interfaces
     public interface ISessionStripe
     {
         Task<StripeRequestDTO> CreateSession(StripeRequestDTO dto);
-        Task<StatusTransactionDTO> ValidateTransaction(TransactionStatusRequestDTO request);
+        Task<string> GetPaymentIntent(string sessionId);
     }
 }

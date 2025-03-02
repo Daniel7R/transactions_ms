@@ -3,8 +3,8 @@ using PaymentsMS.Domain.Enums;
 
 namespace PaymentsMS.Application.DTOs.Request
 {
-    public class SaleRequestDTO: StripeRequestDTO
+    public class SaleParticipantRequestDTO: StripeRequestDTO
     {
-        public SaleDetailsDTO? Details { get; set; } 
+        public SaleParticipantDetailsDTO? Details { get; set; } 
     }
 }

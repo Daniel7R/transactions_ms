@@ -6,6 +6,7 @@ using PaymentsMS.Application.DTOs.commons;
 using PaymentsMS.Application.DTOs.Request;
 using PaymentsMS.Application.DTOs.Response;
 using PaymentsMS.Application.Interfaces;
+using PaymentsMS.Domain.Enums;
 using PaymentsMS.Domain.Exceptions;
 using Stripe.Checkout;
 using System.Net.Mime;
@@ -36,13 +37,13 @@ namespace PaymentsMS.API.Controllers
         /// <returns></returns>
         [Authorize]
         [HttpPost]
-        [Route("sale")]
+        [Route("participant/sale")]
         [Consumes("application/json")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(ResponseDTO<SaleRequestDTO?>), statusCode: StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ResponseDTO<SaleRequestDTO?>), statusCode: StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ResponseDTO<StripeRequestDTO?>), statusCode: StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseDTO<StripeRequestDTO?>), statusCode: StatusCodes.Status400BadRequest)]
         [ProducesResponseType(statusCode: StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> CreateSale([FromBody] SaleRequestDTO saleRequest)
+        public async Task<IActionResult> CreateParticipantSale([FromBody] SaleParticipantRequestDTO saleRequest)
         {
             ResponseDTO<StripeRequestDTO?> response = new ResponseDTO<StripeRequestDTO?>();
             try
@@ -54,17 +55,50 @@ namespace PaymentsMS.API.Controllers
                 response.Result = sessionResult;
                 return Ok(response);
             }
+            catch (BusinessRuleException businessException)
+            {
+                _logger.LogError($"Can not create StripeSession, error: {businessException.Message}");
+                //response.IsSuccess = false;
+                response.Message = businessException.Message;
+                return BadRequest(response);
+            }
             catch (Exception ex)
             {
-                _logger.LogError($"Can not create StripeSession, error: {ex.Message}");
-                response.IsSuccess = false;
-                response.Message = ex.Message;
-                return BadRequest(response);
+                _logger.LogError(ex.Message);
+                throw new Exception(ex.Message, ex);
             }
         }
 
+        [Authorize]
+        [HttpPost]
+        [Route("viewer/sale")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(ResponseDTO<StripeRequestDTO?>), statusCode: StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseDTO<StripeRequestDTO?>),statusCode: StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(statusCode: StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> CreateViewerSale([FromBody] SaleViewerRequestDTO viewerSale)
+        {
+            ResponseDTO<StripeRequestDTO?> response = new();
+            try
+            {
+                string user = ExtractUserId();
+                if (string.IsNullOrEmpty(user)) throw new BusinessRuleException("Invalid User");
+
+                var sessionResult = await _saleService.MakeSaleTransaction(viewerSale, Convert.ToInt32(user));
+                response.Result = sessionResult;
+                return Ok(response);
+
+            }
+            catch(BusinessRuleException businessException)
+            {
+
+            }
+            throw new NotImplementedException();
+        }
+
         /// <summary>
-        /// Create a donation transaction(only session
+        /// Create a donation transaction
         /// </summary>
         /// <param name="donationRequest"></param>
         /// <returns></returns>
@@ -73,6 +107,8 @@ namespace PaymentsMS.API.Controllers
         [Route("donation")]
         [Consumes("application/json")]
         [Produces("application/json")]
+        [ProducesResponseType(typeof(ResponseDTO<StripeRequestDTO?>), statusCode: StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseDTO<StripeRequestDTO?>), statusCode: StatusCodes.Status400BadRequest)]
         [ProducesResponseType(statusCode: StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateDonation([FromBody]DonationsRequestDTO donationRequest)
         {
@@ -90,7 +126,7 @@ namespace PaymentsMS.API.Controllers
             } catch(Exception ex)
             {
                 _logger.LogError($"{ex.Message}");
-                response.IsSuccess = false;
+                //response.IsSuccess = false;
                 response.Message = ex.Message;
                 return BadRequest(response);
             }
@@ -112,15 +148,29 @@ namespace PaymentsMS.API.Controllers
                 if (string.IsNullOrEmpty(user)) throw new BusinessRuleException("Invalid User");
 
                 transactionRequest.IdUser = Convert.ToInt32(user);
+                StatusTransactionDTO resultValidation;
 
-                var resultValidation = await _sessionStripe.ValidateTransaction(transactionRequest);
+                switch (transactionRequest.TransactionType)
+                {
+                    case TransactionType.SALE:
+                        resultValidation = new();
+                        break;
+                    case TransactionType.DONATION:
+                        resultValidation = await _donationService.ValidateDonation(transactionRequest);
+                        break;
+                    //it would have as many transactions type as it can
+                    default:
+                        resultValidation = new StatusTransactionDTO();
+                        break;
+                }
+
                 response.Result = resultValidation;
                 return Ok(response);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"{ex.Message}");
-                response.IsSuccess = false;
+                //response.IsSuccess = false;
                 response.Message = ex.Message;
                 return BadRequest(response);
             }

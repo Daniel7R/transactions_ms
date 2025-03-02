@@ -6,6 +6,7 @@ using PaymentsMS.Infrastructure.Data;
 using PaymentsMS.Infrastructure.EventBus;
 using PaymentsMS.Infrastructure.Repository;
 using PaymentsMS.Infrastructure.Swagger;
+using StackExchange.Redis;
 using Stripe;
 using System.Text.Json.Serialization;
 
@@ -34,10 +35,20 @@ builder.Services.AddScoped<ITransactionsService, TransactionsService>();
 builder.Services.AddScoped<IDonationService, DonationService>();
 builder.Services.AddScoped<ISaleService, SaleService>();
 builder.Services.AddScoped<ISessionStripe, SessionStripe>();
-builder.Services.AddScoped(provider => new Lazy<ITransactionsService>(() => provider.GetRequiredService<ITransactionsService>())); 
+builder.Services.AddScoped<IComissionService, ComissionService>();
+//builder.Services.AddScoped(provider => new Lazy<ITransactionsService>(() => provider.GetRequiredService<ITransactionsService>())); 
 builder.Services.AddAutoMapper(typeof(MapperProfile));
 
+var connStringRedis = builder.Configuration.GetValue<string>("Redis:ConnectionString");
+
+builder.Services.AddScoped<IConnectionMultiplexer>(cm => ConnectionMultiplexer.Connect(connStringRedis));
+
+builder.Services.AddScoped<RedisContext>();
+builder.Services.AddScoped<IRedisService,  RedisService>();
+
 builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection("RabbitMQ"));
+builder.Services.AddSingleton<IEventBusProducer, EventBusProducer>();
+builder.Services.AddHostedService<EventBusProducer>();
 
 builder.AddAppAuthentication();
 builder.Services.AddAuthorization();

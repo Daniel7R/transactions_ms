@@ -13,6 +13,6 @@
         public string? PaymentIntentId { get; set; }
         public string? StripeSessionId {  get; set; }
         // details???
-        public SaleDetailsDTO Detail {  get; set; }
+        public SaleParticipantDetailsDTO Detail {  get; set; }
     }
 }

@@ -12,37 +12,44 @@ namespace PaymentsMS.Application.Services
 {
     public class SessionStripe : ISessionStripe
     {
-        private readonly Lazy<ITransactionsService> _transactionsService;
+        //private readonly Lazy<ITransactionsService> _transactionsService;
         private const int DEFAULT_NUMBER_ITEMS = 1;
         private readonly ILogger<SessionStripe> _logger;
 
-        public SessionStripe(ILogger<SessionStripe> logger, Lazy<ITransactionsService> transactionsService)
+        public SessionStripe(ILogger<SessionStripe> logger /*,Lazy<ITransactionsService> transactionsService*/)
         {
             _logger = logger;
-            _transactionsService = transactionsService;
+            //_transactionsService = transactionsService;
         }
 
         public Task<StripeRequestDTO> CreateSession(StripeRequestDTO request)
         {
-            var options = new SessionCreateOptions
+            try
             {
-                SuccessUrl = request.ApprovedUrl,
-                CancelUrl = request.CancelUrl,
-                Mode = "payment",
-                LineItems = new()
-            };
+                var options = new SessionCreateOptions
+                {
+                    SuccessUrl = request.ApprovedUrl,
+                    CancelUrl = request.CancelUrl,
+                    Mode = "payment",
+                    LineItems = new()
+                };
 
-            SessionLineItemOptions sessionLineItem = CreateSessionLineItem(request);
+                SessionLineItemOptions sessionLineItem = CreateSessionLineItem(request);
+                options.LineItems.Add(sessionLineItem);
+                //Add as many items/tickets as need, by default I'm selling 1
+                var service = new SessionService();
+                Session session = service.Create(options);
+                request.SessionId = session.Id;
+                request.SessionUrl = session.Url;
 
-            options.LineItems.Add(sessionLineItem);
-            //Add as many items/tickets as need, by default I'm selling 1
-            var service = new SessionService();
-            Session session = service.Create(options);
+                return Task.FromResult(request);
 
-            request.SessionId = session.Id;
-            request.SessionUrl = session.Url;
-
-            return Task.FromResult(request);
+            }
+            catch (StripeException ex)
+            {
+                _logger.LogError($"Error creating Stripe session: {ex.Message}");
+                throw new BusinessRuleException("Error processing the payment session.");
+            }
         }
 
         private SessionLineItemOptions CreateSessionLineItem(StripeRequestDTO request)
@@ -50,23 +57,42 @@ namespace PaymentsMS.Application.Services
             var sessionLineItem = new SessionLineItemOptions();
             switch (request)
             {
-                case SaleRequestDTO transactionRequest:
+                case SaleParticipantRequestDTO saleParticipant:
                     //FALTA CONSULTAR LA INFO DEL TICKET, SI TICKET ES NULL => CREO UNO SI SE PUEDE CREAR
-                    var stripeR2Transaction = (SaleRequestDTO)request;
+                    // BASICAMENTE SABIENDO SI ES TORNEO PAGO O NO ASIGNO PRECIO, DEPENDIENDO SI ES PARTICIPANTE O
+                    // 
+                    var priceSale = saleParticipant.Details.IsFree ? (long)PricesSales.FREE_PARTICIPANT:(long)PricesSales.PAID_PARTICIPANT;
                     sessionLineItem = new SessionLineItemOptions
                     {
                         PriceData = new SessionLineItemPriceDataOptions
                         {
-                            UnitAmount = (long)(stripeR2Transaction.Details.Price * 100),
+                            //CORREGIR PRICE
+                            UnitAmount = (priceSale * 100),
                             Currency = "cop",
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
-                                Name = $"Price ticket:  {stripeR2Transaction.Details.Price}"
+                                //CORREGIR PRICE Y EL TIPO DE VENTA DE TICKET
+                                Name = $"Participant ticket price:  {PricesSales.PAID_PARTICIPANT}"
                             },
                         },
                         Quantity = DEFAULT_NUMBER_ITEMS
                     };
 
+                    break;
+                case SaleViewerRequestDTO saleViewer:
+                    sessionLineItem = new SessionLineItemOptions
+                    {
+                        PriceData = new SessionLineItemPriceDataOptions
+                        {
+                            UnitAmount = ((long)PricesSales.VIEWER * 100),
+                            Currency = "cop",
+                            ProductData = new SessionLineItemPriceDataProductDataOptions
+                            {
+                                Name = $"Viewer ticket price:  {PricesSales.VIEWER}"
+                            },
+                        },
+                        Quantity = DEFAULT_NUMBER_ITEMS
+                    };
                     break;
                 case DonationsRequestDTO donationRequest:
                     var stripeR2Donation = (DonationsRequestDTO)request;
@@ -85,51 +111,49 @@ namespace PaymentsMS.Application.Services
                     };
                     break;
                 default:
-                    throw new NotImplementedException("Transaction type not defined");
+                    throw new BusinessRuleException("Unsupported transaction type.");
             }
 
             return sessionLineItem;
         }
 
-        public async Task<StatusTransactionDTO> ValidateTransaction(TransactionStatusRequestDTO request)
+        public async Task<string> GetPaymentIntent(string sessionId)
         {
-            var sessionService = new SessionService();
-            Session session = sessionService.Get(request.SessionId);
-
-            if (session == null || session.PaymentIntentId == null)
+            try
             {
-                throw new BusinessRuleException("Payment processing error");
+                var sessionService = new SessionService();
+                Session session = sessionService.Get(sessionId);
+
+                if (session == null || session.PaymentIntentId == null) throw new BusinessRuleException("Payment processing error");
+
+                var paymenentIntentService = new PaymentIntentService();
+
+                PaymentIntent paymentIntent = paymenentIntentService.Get(session.PaymentIntentId);
+
+                return paymentIntent.Status;
+
             }
-
-            var statusTransaction = new StatusTransactionDTO
+            catch (StripeException ex)
             {
-                SessionId = request.SessionId,
-            };
-
-            var paymenentIntentService = new PaymentIntentService();
-
-            PaymentIntent paymentIntent = paymenentIntentService.Get(session.PaymentIntentId);
-
-            var service = _transactionsService.Value;
-            var transaction = await service.GetTransactionBySessionId(request.SessionId);
-
-            _logger.LogInformation($"{TransactionStatus.succeeded}");
-            if (paymentIntent.Status.Equals(TransactionStatus.succeeded.ToString()))
-            {
-                //update transaction status
-                _logger.LogInformation($"{transaction.Id}<=>{paymentIntent.Status}");
-                if (transaction != null) await service.UpdateTransactionStatus(transaction.Id, TransactionStatus.succeeded);
-                else throw new BusinessRuleException("Transaction not found");
-
-                statusTransaction.Status = TransactionStatus.succeeded;
+                _logger.LogError($"Error retrieving payment intent: {ex.Message}");
+                throw new BusinessRuleException("Error retrieving payment status.");
             }
-            else
-            {
-                await service.UpdateTransactionStatus(transaction.Id, TransactionStatus.failed);
-                statusTransaction.Status = TransactionStatus.failed;
-            }
+            /*            if (paymentIntent.Status.Equals(TransactionStatus.succeeded.ToString()))
+             {
+                 //update transaction status
+                 _logger.LogInformation($"{transaction.Id}<=>{paymentIntent.Status}");
+                 if (transaction != null) await service.UpdateTransactionStatus(transaction.Id, TransactionStatus.succeeded);
+                 else throw new BusinessRuleException("Transaction not found");
 
-            return statusTransaction;
+                 statusTransaction.Status = TransactionStatus.succeeded;
+             }
+             else
+             {
+                 await service.UpdateTransactionStatus(transaction.Id, TransactionStatus.failed);
+                 statusTransaction.Status = TransactionStatus.failed;
+             }
+
+             return statusTransaction;*/
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Moq;
+using Newtonsoft.Json;
 using PaymentsMS.Application.DTOs.commons;
 using PaymentsMS.Application.DTOs.Request;
 using PaymentsMS.Application.Interfaces;
@@ -25,9 +26,10 @@ namespace PaymentsMS.Tests
         {
             _sessionStripeMock = new Mock<ISessionStripe>();
             _transactionsServiceMock = new Mock<ITransactionsService>();
-            _comissionServiceMock = new Mock<IComissionService>();
-            _loggerMock = new Mock<ILogger<DonationService>>();
             _donationsCreateRepoMock = new Mock<ICreateRepository<Donations>>();
+            _comissionServiceMock = new Mock<IComissionService>();
+            _redisServiceMock = new Mock<IRedisService>();
+            _loggerMock = new Mock<ILogger<DonationService>>();
 
             _donationService = new DonationService(
                 _sessionStripeMock.Object,
@@ -71,10 +73,6 @@ namespace PaymentsMS.Tests
                 .Setup(t => t.CreateTransaction(It.IsAny<Transactions>()))
                 .ReturnsAsync(createdTransaction);
 
-            _donationsCreateRepoMock
-                .Setup(d => d.CreateAsync(It.IsAny<Donations>()))
-                .ReturnsAsync(It.IsAny<Donations>());
-
             // Act
             var result = await _donationService.MakeDonationTransaction(donationRequest, 1);
 
@@ -83,7 +81,6 @@ namespace PaymentsMS.Tests
             Assert.Equal(stripeSession.SessionId, result.SessionId);
             _sessionStripeMock.Verify(s => s.CreateSession(donationRequest), Times.Once);
             _transactionsServiceMock.Verify(t => t.CreateTransaction(It.IsAny<Transactions>()), Times.Once);
-            _donationsCreateRepoMock.Verify(d => d.CreateAsync(It.IsAny<Donations>()), Times.Once);
         }
 
         [Fact]
@@ -104,15 +101,25 @@ namespace PaymentsMS.Tests
         public async Task ValidateDonation_ShouldUpdateTransaction_WhenPaymentIsSuccessful()
         {
             // Arrange
-            var request = new TransactionStatusRequestDTO { SessionId = "sess_123" };
+            var request = new TransactionStatusRequestDTO { SessionId = "session_test" };
 
             var transaction = new Transactions
             {
                 Id = 10,
                 StripeSessionId = request.SessionId,
-                Quantity = 100,
+                Quantity = 10000,
                 TransactionStatus = TransactionStatus.pending
             };
+
+            var cachedDonation = JsonConvert.SerializeObject(new CacheInfoDonationDTO
+            {
+                IdUser = 1,
+                IdTournament = 2
+            });
+
+            _redisServiceMock
+                .Setup(r => r.GetValue(It.Is<string>(k => k.Contains(request.SessionId))))
+                .Returns(cachedDonation);
 
             _transactionsServiceMock
                 .Setup(t => t.GetTransactionBySessionId(request.SessionId))

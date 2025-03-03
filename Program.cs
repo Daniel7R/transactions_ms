@@ -8,6 +8,7 @@ using PaymentsMS.Infrastructure.Repository;
 using PaymentsMS.Infrastructure.Swagger;
 using StackExchange.Redis;
 using Stripe;
+using Stripe.Checkout;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +31,8 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddScoped(typeof(ICreateRepository<>), typeof(CreateRepository<>));
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<SessionService>();
+builder.Services.AddScoped<PaymentIntentService>();
 
 builder.Services.AddScoped<ITransactionsService, TransactionsService>();
 builder.Services.AddScoped<IDonationService, DonationService>();

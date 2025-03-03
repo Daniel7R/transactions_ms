@@ -101,13 +101,14 @@ namespace PaymentsMS.Tests
         public async Task ValidateDonation_ShouldUpdateTransaction_WhenPaymentIsSuccessful()
         {
             // Arrange
-            var request = new TransactionStatusRequestDTO { SessionId = "session_test" };
+            var request = new TransactionStatusRequestDTO { SessionId = "session_test", TransactionType = TransactionType.DONATION };
 
             var transaction = new Transactions
             {
                 Id = 10,
                 StripeSessionId = request.SessionId,
                 Quantity = 10000,
+                TransactionType = TransactionType.DONATION,
                 TransactionStatus = TransactionStatus.pending
             };
 
@@ -151,7 +152,7 @@ namespace PaymentsMS.Tests
         public async Task ValidateDonation_ShouldThrowException_WhenTransactionNotFound()
         {
             // Arrange
-            var request = new TransactionStatusRequestDTO { SessionId = "sess_123" };
+            var request = new TransactionStatusRequestDTO { SessionId = "sess_123", TransactionType = TransactionType.DONATION };
 
             _transactionsServiceMock
                 .Setup(t => t.GetTransactionBySessionId(request.SessionId))
@@ -165,14 +166,15 @@ namespace PaymentsMS.Tests
         public async Task ValidateDonation_ShouldUpdateTransactionToFailed_WhenPaymentFails()
         {
             // Arrange
-            var request = new TransactionStatusRequestDTO { SessionId = "session_test" };
+            var request = new TransactionStatusRequestDTO { SessionId = "session_test", TransactionType = TransactionType.DONATION };
 
             var transaction = new Transactions
             {
                 Id = 10,
                 StripeSessionId = request.SessionId,
                 Quantity = 100,
-                TransactionStatus = TransactionStatus.pending
+                TransactionStatus = TransactionStatus.pending,
+                TransactionType = TransactionType.DONATION
             };
 
             _transactionsServiceMock

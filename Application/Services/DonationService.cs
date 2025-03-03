@@ -74,11 +74,14 @@ namespace PaymentsMS.Application.Services
         {
             var transaction = await _transactionsService.GetTransactionBySessionId(request.SessionId);
 
+            if (transaction == null) throw new BusinessRuleException("Transaction not found");
+            
+            if (transaction.TransactionType != TransactionType.DONATION) throw new BusinessRuleException("Transaction type is not valid");
+
             var statusTransaction = new StatusTransactionDTO
             {
                 SessionId = request.SessionId,
             };
-            if (transaction == null) throw new BusinessRuleException("Transaction not found");
 
             var paymentIntentStatus = await _sessionStripe.GetPaymentIntent(request.SessionId);
 

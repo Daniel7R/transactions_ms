@@ -24,7 +24,7 @@ namespace PaymentsMS.Tests
             _mockSessionService = new Mock<SessionService>();
             _mockPaymentIntentService = new Mock<PaymentIntentService>();
 
-            _sessionStripe = new SessionStripe(_mockLogger.Object);
+            _sessionStripe = new SessionStripe(_mockLogger.Object, _mockPaymentIntentService.Object, _mockSessionService.Object);
         }
 
         [Fact]
@@ -37,11 +37,11 @@ namespace PaymentsMS.Tests
                 CancelUrl = "https://cancel.com"
             };
 
-            var fakeSession = new Session { Id = "session_test", Url = "http://checkout.stripe.com/pay/session_test" };
+            var fakeSession = new Session { Id = "session_test", Url = "https://checkout.stripe.com/pay/session_test" };
 
             _mockSessionService
-            .Setup(s => s.CreateAsync(It.IsAny<SessionCreateOptions>(), null, default))
-            .ReturnsAsync(fakeSession);
+            .Setup(s => s.Create(It.IsAny<SessionCreateOptions>(), null))
+            .Returns(fakeSession);
 
             //act
             var result = await _sessionStripe.CreateSession(request);
@@ -57,6 +57,7 @@ namespace PaymentsMS.Tests
             //arrage
             var request = new SaleViewerRequestDTO
             {
+                SessionId ="123",
                 ApprovedUrl = "https://approved.com",
                 CancelUrl = "https://cancel.com"
             };
@@ -65,9 +66,11 @@ namespace PaymentsMS.Tests
                 .Setup(s => s.Create(It.IsAny<SessionCreateOptions>(), null))
                 .Throws(new StripeException("Stripe error"));
 
+
+
             //act && assert
-            var ex = await Assert.ThrowsAsync<BusinessRuleException>(()=> _sessionStripe.CreateSession(request));
-            Assert.Equal("Error retrieving payment status.", ex.Message);
+            var ex = await Assert.ThrowsAsync<BusinessRuleException>(() => _sessionStripe.CreateSession(request));
+            Assert.Equal("Error processing the payment session.", ex.Message);
         }
 
 
@@ -102,7 +105,7 @@ namespace PaymentsMS.Tests
                 .Setup(p => p.Get(paymentIntentId, null, null))
                 .Returns(fakePaymentIntent);
 
-            var sessionStripe = new SessionStripe(mockLogger.Object);
+            var sessionStripe = new SessionStripe(mockLogger.Object, mockPaymentIntentService.Object, mockSessionService.Object);
 
             // Act
             var result = await sessionStripe.GetPaymentIntent(sessionId);
@@ -112,21 +115,44 @@ namespace PaymentsMS.Tests
             Assert.Equal("succeeded", result);
         }
 
+        [Fact]
+        public async Task GetPaymentIntent_ShouldThrowBusinessRuleException_WhenPaymentIntentServiceThrowsError()
+        {
+            //arrange
+            var sessionId = "test_session_id";
+            var paymentIntentId = "test_payment_intent";
+
+            var session = new Session { PaymentIntentId = paymentIntentId };
+
+            _mockSessionService
+                .Setup(s => s.Get(sessionId,null,null))
+                .Returns(session);
+
+            _mockPaymentIntentService
+                .Setup(p => p.Get(paymentIntentId, null, null))
+                .Throws(new StripeException("Stripe error"));
+
+            // Act & Assert
+            var ex = await Assert.ThrowsAsync<BusinessRuleException>(() => _sessionStripe.GetPaymentIntent(sessionId));
+
+            Assert.Equal("Error retrieving payment status.", ex.Message);
+
+        }
 
         [Fact]
         public async Task GetPaymentIntent_ShouldThrowBusinessRuleException_WhenSessionNotFound()
         {
-            //arrange
+            //arrange   
             var sessionId = "test_invalid";
 
             _mockSessionService
-                .Setup(s => s.Get(sessionId, null, null))
-                .Returns((Session)null);
+                .Setup(s => s.Create(It.IsAny<SessionCreateOptions>(), null))
+                .Throws(new StripeException("Stripe error"));
+
 
             //act 
             var ex = await Assert.ThrowsAsync<BusinessRuleException>(() => _sessionStripe.GetPaymentIntent(sessionId));
-            Assert.Equal("Error retrieving payment status.", ex.Message);
-
+            Assert.Equal("Payment processing error", ex.Message);
         }
 
         [Fact]

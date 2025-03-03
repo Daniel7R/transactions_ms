@@ -15,10 +15,14 @@ namespace PaymentsMS.Application.Services
         //private readonly Lazy<ITransactionsService> _transactionsService;
         private const int DEFAULT_NUMBER_ITEMS = 1;
         private readonly ILogger<SessionStripe> _logger;
+        private readonly PaymentIntentService _paymentIntentService;
+        private readonly SessionService _sessionService;
 
-        public SessionStripe(ILogger<SessionStripe> logger /*,Lazy<ITransactionsService> transactionsService*/)
+        public SessionStripe(ILogger<SessionStripe> logger, PaymentIntentService paymentIntentService, SessionService sessionService /*,Lazy<ITransactionsService> transactionsService*/)
         {
             _logger = logger;
+            _paymentIntentService = paymentIntentService;
+            _sessionService = sessionService;
             //_transactionsService = transactionsService;
         }
 
@@ -37,8 +41,8 @@ namespace PaymentsMS.Application.Services
                 SessionLineItemOptions sessionLineItem = CreateSessionLineItem(request);
                 options.LineItems.Add(sessionLineItem);
                 //Add as many items/tickets as need, by default I'm selling 1
-                var service = new SessionService();
-                Session session = service.Create(options);
+                //var service = new SessionService();
+                Session session = _sessionService.Create(options);
                 request.SessionId = session.Id;
                 request.SessionUrl = session.Url;
 
@@ -123,13 +127,13 @@ namespace PaymentsMS.Application.Services
             try
             {
                 var sessionService = new SessionService();
-                Session session = sessionService.Get(sessionId);
+                Session session = _sessionService.Get(sessionId);
 
                 if (session == null || session.PaymentIntentId == null) throw new BusinessRuleException("Payment processing error");
 
-                var paymenentIntentService = new PaymentIntentService();
+                //var paymenentIntentService = new PaymentIntentService();
 
-                PaymentIntent paymentIntent = paymenentIntentService.Get(session.PaymentIntentId);
+                PaymentIntent paymentIntent = _paymentIntentService.Get(session.PaymentIntentId);
 
                 return paymentIntent.Status;
 

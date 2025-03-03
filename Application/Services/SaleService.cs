@@ -123,11 +123,14 @@ namespace PaymentsMS.Application.Services
             //guarde el sessionid como clave y el id_user y id ticket para usarlos despues
             var transaction = await _transactionsService.GetTransactionBySessionId(request.SessionId);
 
+            if (transaction == null) throw new BusinessRuleException("Transaction not found");
+
+            if (transaction.TransactionType != TransactionType.SALE) throw new BusinessRuleException("Transaction type is not valid");
+
             var statusTransaction = new StatusTransactionDTO
             {
                 SessionId = request.SessionId,
             };
-            if (transaction == null) throw new BusinessRuleException("Transaction not found");
             var paymentIntentStatus = await _sessionStripe.GetPaymentIntent(request.SessionId);
             //FAULTED when payment total is 0
             if (paymentIntentStatus.Equals(TransactionStatus.succeeded.ToString()) && !transaction.TransactionStatus.Equals(TransactionStatus.succeeded))

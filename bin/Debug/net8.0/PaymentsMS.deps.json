@@ -17,6 +17,7 @@
           "Moq": "4.16.1",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "9.0.3",
           "RabbitMQ.Client": "7.1.0",
+          "StackExchange.Redis": "2.8.24",
           "Stripe.net": "47.4.0",
           "Swashbuckle.AspNetCore": "6.4.0",
           "xunit": "2.4.1",
@@ -1019,6 +1020,17 @@
           }
         }
       },
+      "Pipelines.Sockets.Unofficial/2.2.8": {
+        "dependencies": {
+          "System.IO.Pipelines": "9.0.1"
+        },
+        "runtime": {
+          "lib/net5.0/Pipelines.Sockets.Unofficial.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "2.2.8.1080"
+          }
+        }
+      },
       "RabbitMQ.Client/7.1.0": {
         "dependencies": {
           "System.IO.Pipelines": "9.0.1",
@@ -1079,6 +1091,18 @@
       "runtime.ubuntu.14.04-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
       "runtime.ubuntu.16.04-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
       "runtime.ubuntu.16.10-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
+      "StackExchange.Redis/2.8.24": {
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "9.0.1",
+          "Pipelines.Sockets.Unofficial": "2.2.8"
+        },
+        "runtime": {
+          "lib/net8.0/StackExchange.Redis.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.8.24.3255"
+          }
+        }
+      },
       "Stripe.net/47.4.0": {
         "dependencies": {
           "Newtonsoft.Json": "13.0.3",
@@ -2370,6 +2394,13 @@
       "path": "nuget.frameworks/5.0.0",
       "hashPath": "nuget.frameworks.5.0.0.nupkg.sha512"
     },
+    "Pipelines.Sockets.Unofficial/2.2.8": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-zG2FApP5zxSx6OcdJQLbZDk2AVlN2BNQD6MorwIfV6gVj0RRxWPEp2LXAxqDGZqeNV1Zp0BNPcNaey/GXmTdvQ==",
+      "path": "pipelines.sockets.unofficial/2.2.8",
+      "hashPath": "pipelines.sockets.unofficial.2.2.8.nupkg.sha512"
+    },
     "RabbitMQ.Client/7.1.0": {
       "type": "package",
       "serviceable": true,
@@ -2488,6 +2519,13 @@
       "sha512": "sha512-VB5cn/7OzUfzdnC8tqAIMQciVLiq2epm2NrAm1E9OjNRyG4lVhfR61SMcLizejzQP8R8Uf/0l5qOIbUEi+RdEg==",
       "path": "runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl/4.3.0",
       "hashPath": "runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512"
+    },
+    "StackExchange.Redis/2.8.24": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-GWllmsFAtLyhm4C47cOCipGxyEi1NQWTFUHXnJ8hiHOsK/bH3T5eLkWPVW+LRL6jDiB3g3izW3YEHgLuPoJSyA==",
+      "path": "stackexchange.redis/2.8.24",
+      "hashPath": "stackexchange.redis.2.8.24.nupkg.sha512"
     },
     "Stripe.net/47.4.0": {
       "type": "package",

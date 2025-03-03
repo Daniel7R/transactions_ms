@@ -1,4 +1,5 @@
-﻿using PaymentsMS.Application.DTOs.commons;
+﻿using Newtonsoft.Json;
+using PaymentsMS.Application.DTOs.commons;
 using PaymentsMS.Application.DTOs.Request;
 using PaymentsMS.Application.DTOs.Response;
 using PaymentsMS.Application.Interfaces;
@@ -18,7 +19,7 @@ namespace PaymentsMS.Application.Services
         private readonly ICreateRepository<Donations> _donationsCreateRepo;
         private readonly IRedisService _redisService;
 
-        private const string PREFIX_KEY_REDIS = "PaymentsMS";
+        private const string PREFIX_KEY_REDIS = "PaymentsMSDonations";
         private TimeSpan DEFAULT_EXPIRATION_REDIS = TimeSpan.FromDays(7);
 
         public DonationService(
@@ -48,8 +49,13 @@ namespace PaymentsMS.Application.Services
                 IdUser = userId
             };
             var transactionCreate = await _transactionsService.CreateTransaction(transaction);
+            var info2Cached = new CacheInfoDonationDTO
+            {
+                IdUser = userId,
+                IdTournament = donation.IdTournament,
+            };
 
-            _redisService.SetValue($"{PREFIX_KEY_REDIS}-{session.SessionId}:",userId.ToString(), DEFAULT_EXPIRATION_REDIS);
+            _redisService.SetValue($"{PREFIX_KEY_REDIS}-{session.SessionId}",JsonConvert.SerializeObject(info2Cached), DEFAULT_EXPIRATION_REDIS);
 
             //create the donation
             /*Donations donationCreate = new Donations
@@ -79,29 +85,32 @@ namespace PaymentsMS.Application.Services
             if (paymentIntentStatus.Equals(TransactionStatus.succeeded.ToString()) && !transaction.TransactionStatus.Equals(TransactionStatus.succeeded))
             {
                 //update transaction status
-                _logger.LogInformation($"{transaction.Id}<=>{paymentIntentStatus}");
+
+                //Get the cached info donation
+                string key = $"{PREFIX_KEY_REDIS}-{request.SessionId}";
+                var donationInfoCached =_redisService.GetValue(key);
+
+                if (donationInfoCached == null) throw new BusinessRuleException("Session has expired or does not exist");
+               
+                _logger.LogInformation($"{donationInfoCached}");
+
+                var donationInfo = JsonConvert.DeserializeObject<CacheInfoDonationDTO>(donationInfoCached);
+                
                 await _transactionsService.UpdateTransactionStatus(transaction.Id, TransactionStatus.succeeded);
                 await _comissionService.TakeComission(transaction.Id, transaction.Quantity);
 
-                var userCached =_redisService.GetValue($"{PREFIX_KEY_REDIS}-{request.SessionId}");
-
-                if (userCached == null)
-                {
-                    throw new BusinessRuleException("Session has expired");
-                }
-
-
 
                 //create the donation
-                /*Donations donationCreate = new Donations
+                Donations donationCreate = new Donations
                 {
-                    IdTournament = donation.IdTournament,
-                    IdUser = userId,
+                    IdTournament = donationInfo.IdTournament,
+                    IdUser = donationInfo.IdUser,
                     //id of created transaction
-                    IdTransaction = transactionCreate.Id,
+                    IdTransaction = transaction.Id,
                 };
                 await _donationsCreateRepo.CreateAsync(donationCreate);
-                */
+
+                _redisService.DeleteKey(key);
 
                 statusTransaction.Status = TransactionStatus.succeeded;
             }

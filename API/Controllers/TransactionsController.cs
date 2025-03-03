@@ -8,6 +8,7 @@ using PaymentsMS.Application.DTOs.Response;
 using PaymentsMS.Application.Interfaces;
 using PaymentsMS.Domain.Enums;
 using PaymentsMS.Domain.Exceptions;
+using Stripe;
 using Stripe.Checkout;
 using System.Net.Mime;
 using System.Security.Claims;
@@ -93,8 +94,18 @@ namespace PaymentsMS.API.Controllers
             catch(BusinessRuleException businessException)
             {
 
+                _logger.LogError(businessException.Message);
+                response.Message = businessException.Message;
+
+                return BadRequest(response);
             }
-            throw new NotImplementedException();
+            catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                response.Message = ex.Message;
+
+                return BadRequest(response);
+            }
         }
 
         /// <summary>
@@ -123,7 +134,17 @@ namespace PaymentsMS.API.Controllers
 
                 return Ok(response);
 
-            } catch(Exception ex)
+            }
+            catch (StripeException se)
+            {
+
+                _logger.LogError($"{se.Message}");
+                //response.IsSuccess = false;
+                response.Message = se.Message;
+                return BadRequest(response);
+
+            }
+            catch(Exception ex)
             {
                 _logger.LogError($"{ex.Message}");
                 //response.IsSuccess = false;
@@ -153,7 +174,7 @@ namespace PaymentsMS.API.Controllers
                 switch (transactionRequest.TransactionType)
                 {
                     case TransactionType.SALE:
-                        resultValidation = new();
+                        resultValidation = await _saleService.ValidateSale(transactionRequest);
                         break;
                     case TransactionType.DONATION:
                         resultValidation = await _donationService.ValidateDonation(transactionRequest);

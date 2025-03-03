@@ -62,6 +62,7 @@ namespace PaymentsMS.Application.Services
                     // BASICAMENTE SABIENDO SI ES TORNEO PAGO O NO ASIGNO PRECIO, DEPENDIENDO SI ES PARTICIPANTE O
                     // 
                     var priceSale = saleParticipant.Details.IsFree ? (long)PricesSales.FREE_PARTICIPANT:(long)PricesSales.PAID_PARTICIPANT;
+                    var typeSale = saleParticipant.Details.IsFree ? PricesSales.FREE_PARTICIPANT: PricesSales.PAID_PARTICIPANT;
                     sessionLineItem = new SessionLineItemOptions
                     {
                         PriceData = new SessionLineItemPriceDataOptions
@@ -72,7 +73,7 @@ namespace PaymentsMS.Application.Services
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
                                 //CORREGIR PRICE Y EL TIPO DE VENTA DE TICKET
-                                Name = $"Participant ticket price:  {PricesSales.PAID_PARTICIPANT}"
+                                Name = $"Participant ticket price:  {typeSale}"
                             },
                         },
                         Quantity = DEFAULT_NUMBER_ITEMS
@@ -88,7 +89,7 @@ namespace PaymentsMS.Application.Services
                             Currency = "cop",
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
-                                Name = $"Viewer ticket price:  {PricesSales.VIEWER}"
+                                Name = $"Viewer ticket price:  {PricesSales.VIEWER} for match {saleViewer.IdMatch}"
                             },
                         },
                         Quantity = DEFAULT_NUMBER_ITEMS

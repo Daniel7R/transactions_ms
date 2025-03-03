@@ -64,7 +64,7 @@ namespace PaymentsMS.Infrastructure.EventBus
             await _channel.BasicPublishAsync(exchange: "", routingKey: queueName, mandatory: false, basicProperties: props, body: messageBytes);
         }
 
-        public async Task<TResponse> SendRequest<TResquest, TResponse>(TResquest resquest, string queueName)
+        public async Task<TResponse> SendRequest<TResquest, TResponse>(TResquest request, string queueName)
         {
             if (_connection == null || !_connection.IsOpen || _channel.IsClosed)
             {
@@ -87,7 +87,7 @@ namespace PaymentsMS.Infrastructure.EventBus
                 ReplyTo = replyQueueName
             };
 
-            byte[] messageBytes =  Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(props));
+            byte[] messageBytes =  Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request));
             await _channel.BasicPublishAsync(
                 exchange: "", routingKey: queueName, 
                 mandatory: false, basicProperties: props, 

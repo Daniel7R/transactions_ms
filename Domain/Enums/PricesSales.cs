@@ -1,9 +1,11 @@
-﻿namespace PaymentsMS.Domain.Enums
+﻿using System.Runtime.Serialization;
+
+namespace PaymentsMS.Domain.Enums
 {
-    public enum PricesSales
+    public static class PricesSales
     {
-        VIEWER = 5000,
-        PAID_PARTICIPANT = 20000,
-        FREE_PARTICIPANT =0
+        public const double VIEWER = 5000;
+        public const double PAID_PARTICIPANT = 20000;
+        public const double FREE_PARTICIPANT =0;
     }
 }

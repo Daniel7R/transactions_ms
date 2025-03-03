@@ -18,6 +18,7 @@ namespace PaymentsMS.Tests
         private readonly Mock<IComissionService> _comissionServiceMock;
         private readonly Mock<ILogger<DonationService>> _loggerMock;
         private readonly Mock<ICreateRepository<Donations>> _donationsCreateRepoMock;
+        private readonly Mock<IRedisService> _redisServiceMock;
         private readonly DonationService _donationService;
 
         public DonationServiceTests()
@@ -33,7 +34,8 @@ namespace PaymentsMS.Tests
                 _transactionsServiceMock.Object,
                 _loggerMock.Object,
                 _donationsCreateRepoMock.Object,
-                _comissionServiceMock.Object
+                _comissionServiceMock.Object,
+                _redisServiceMock.Object
             );
         }
         [Fact]

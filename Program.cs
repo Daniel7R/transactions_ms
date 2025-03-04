@@ -10,8 +10,12 @@ using StackExchange.Redis;
 using Stripe;
 using Stripe.Checkout;
 using System.Text.Json.Serialization;
+using DotNetEnv;
 
+
+Env.Load();
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables();
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 

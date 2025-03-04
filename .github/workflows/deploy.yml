@@ -17,8 +17,8 @@ jobs:
               with:
                 dotnet-version: 8.x
             - name: "Restore dependencies 🗳️"
-              run: dotnet restore ./TournamentMS.csproj
+              run: dotnet restore ./PaymentsMS.csproj
             - name: "Build project 🏗️👷‍♀️"
-              run: dotnet build ./TournamentMS.csproj --no-restore
+              run: dotnet build ./PaymentsMS.csproj --no-restore
             - name: "Run Tests ✅✅"
-              run: dotnet test ./TournamentMS.csproj --no-build --verbosity normal
+              run: dotnet test ./PaymentsMS.csproj --no-build --verbosity normal

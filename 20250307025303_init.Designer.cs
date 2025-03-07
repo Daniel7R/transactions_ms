@@ -12,8 +12,8 @@ using PaymentsMS.Infrastructure.Data;
 namespace PaymentsMS.Migrations
 {
     [DbContext(typeof(TransactionsDbContext))]
-    [Migration("20250301033942_fixes")]
-    partial class fixes
+    [Migration("20250307025303_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

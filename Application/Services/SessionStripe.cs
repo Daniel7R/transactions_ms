@@ -18,6 +18,8 @@ namespace PaymentsMS.Application.Services
         private readonly PaymentIntentService _paymentIntentService;
         private readonly SessionService _sessionService;
 
+        private const string IS_FREE= "IS_FREE";
+
         public SessionStripe(ILogger<SessionStripe> logger, PaymentIntentService paymentIntentService, SessionService sessionService /*,Lazy<ITransactionsService> transactionsService*/)
         {
             _logger = logger;
@@ -83,6 +85,7 @@ namespace PaymentsMS.Application.Services
                         Quantity = DEFAULT_NUMBER_ITEMS
                     };
 
+
                     break;
                 case SaleViewerRequestDTO saleViewer:
                     sessionLineItem = new SessionLineItemOptions
@@ -129,7 +132,12 @@ namespace PaymentsMS.Application.Services
                 var sessionService = new SessionService();
                 Session session = _sessionService.Get(sessionId);
 
-                if (session == null || session.PaymentIntentId == null) throw new BusinessRuleException("Payment processing error");
+                if(session?.AmountTotal == 0)
+                {
+                    return IS_FREE;
+                }
+
+                if ((session == null || session.PaymentIntentId == null)) throw new BusinessRuleException("Payment processing error");
 
                 //var paymenentIntentService = new PaymentIntentService();
 
@@ -143,22 +151,6 @@ namespace PaymentsMS.Application.Services
                 _logger.LogError($"Error retrieving payment intent: {ex.Message}");
                 throw new BusinessRuleException("Error retrieving payment status.");
             }
-            /*            if (paymentIntent.Status.Equals(TransactionStatus.succeeded.ToString()))
-             {
-                 //update transaction status
-                 _logger.LogInformation($"{transaction.Id}<=>{paymentIntent.Status}");
-                 if (transaction != null) await service.UpdateTransactionStatus(transaction.Id, TransactionStatus.succeeded);
-                 else throw new BusinessRuleException("Transaction not found");
-
-                 statusTransaction.Status = TransactionStatus.succeeded;
-             }
-             else
-             {
-                 await service.UpdateTransactionStatus(transaction.Id, TransactionStatus.failed);
-                 statusTransaction.Status = TransactionStatus.failed;
-             }
-
-             return statusTransaction;*/
         }
     }
 }

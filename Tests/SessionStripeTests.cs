@@ -7,6 +7,7 @@ using PaymentsMS.Domain.Enums;
 using PaymentsMS.Domain.Exceptions;
 using Stripe;
 using Stripe.Checkout;
+using Stripe.V2;
 using Xunit;
 
 namespace PaymentsMS.Tests

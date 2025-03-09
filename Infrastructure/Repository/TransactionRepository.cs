@@ -32,7 +32,7 @@ namespace PaymentsMS.Infrastructure.Repository
             }
 
             transaction.TransactionStatus = newStatus;
-            transaction.TransactionCompletedDate = DateTime.UtcNow.AddHours(5);
+            transaction.TransactionCompletedDate = DateTime.UtcNow.AddHours(-5);
 
             await _context.SaveChangesAsync();
 

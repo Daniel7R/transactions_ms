@@ -8,7 +8,7 @@ namespace PaymentsMS.Domain.Entities
         public string? StripeSessionId { get; set; }
         public decimal Quantity { get; set; }
         public TransactionType TransactionType { get; set; }
-        public DateTime TransactionStartedDate {  get; set; } = DateTime.UtcNow.AddHours(5);
+        public DateTime TransactionStartedDate {  get; set; } = DateTime.UtcNow.AddHours(-5);
         public DateTime? TransactionCompletedDate { get; set; }
         public TransactionStatus TransactionStatus {  get; set; }
         public int? IdUser { get; set; }

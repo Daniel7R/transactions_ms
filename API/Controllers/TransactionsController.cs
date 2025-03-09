@@ -131,35 +131,31 @@ namespace PaymentsMS.API.Controllers
 
                 var resultSession = await _donationService.MakeDonationTransaction(donationRequest,Convert.ToInt32(user));
                 response.Result = (DonationsRequestDTO)resultSession;
-
                 return Ok(response);
-
             }
             catch (StripeException se)
             {
-
                 _logger.LogError($"{se.Message}");
-                //response.IsSuccess = false;
                 response.Message = se.Message;
                 return BadRequest(response);
-
             }
             catch(Exception ex)
             {
                 _logger.LogError($"{ex.Message}");
-                //response.IsSuccess = false;
                 response.Message = ex.Message;
                 return BadRequest(response);
             }
 
         }
 
-        //[ProducesResponseType(statusCode: StatusCodes.Status401Unauthorized)]
         [Authorize]
         [HttpPost]
         [Route("status")]
         [Consumes("application/json")]
         [Produces("application/json")]
+        [ProducesResponseType(200, Type =typeof(ResponseDTO<StatusTransactionDTO>))]
+        [ProducesResponseType(400, Type = typeof(ResponseDTO<StatusTransactionDTO?>))]
+        [ProducesResponseType(statusCode: StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> TransactionStatus([FromBody]TransactionStatusRequestDTO transactionRequest)
         {
             var response = new ResponseDTO<StatusTransactionDTO?>();
@@ -191,7 +187,6 @@ namespace PaymentsMS.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"{ex.Message}");
-                //response.IsSuccess = false;
                 response.Message = ex.Message;
                 return BadRequest(response);
             }

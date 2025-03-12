@@ -238,3 +238,5 @@ C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\n
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\PaymentsMS.pdb
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\PaymentsMS.genruntimeconfig.cache
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\ref\PaymentsMS.dll
+C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\PaymentsMS.xml
+C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\PaymentsMS.xml

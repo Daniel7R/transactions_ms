@@ -12,6 +12,7 @@ C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\n
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\PaymentsMS.runtimeconfig.json
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\PaymentsMS.dll
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\PaymentsMS.pdb
+C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\PaymentsMS.xml
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\AutoMapper.dll
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\Castle.Core.dll
@@ -235,8 +236,7 @@ C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\n
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\PaymentsMS.csproj.Up2Date
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\PaymentsMS.dll
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\refint\PaymentsMS.dll
+C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\PaymentsMS.xml
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\PaymentsMS.pdb
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\PaymentsMS.genruntimeconfig.cache
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\ref\PaymentsMS.dll
-C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\PaymentsMS.xml
-C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\PaymentsMS.xml

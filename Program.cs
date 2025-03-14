@@ -11,6 +11,7 @@ using Stripe;
 using Stripe.Checkout;
 using System.Text.Json.Serialization;
 using DotNetEnv;
+using Microsoft.OpenApi.Models;
 
 
 Env.Load();
@@ -30,6 +31,10 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "PaymentsMS API", Version = "v1" });
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
     c.SchemaFilter<EnumSchemaFilter>(); // Enables los enums as string
 });
 

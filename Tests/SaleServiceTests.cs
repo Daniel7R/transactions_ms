@@ -57,7 +57,8 @@ namespace PaymentsMS.Tests
             var mockTicketResponse = new GetTicketInfoResponse
             {
                 IdTicket = 10,
-                Status = TicketStatus.ACTIVE
+                IdTournament = 1,
+                Status = TicketStatus.GENERATED
             };
             var mockSession = new SaleParticipantRequestDTO
             {
@@ -109,6 +110,19 @@ namespace PaymentsMS.Tests
             // arrange
             var request = new TransactionStatusRequestDTO { SessionId = "session_test" };
             var transaction = new Transactions { Id = 1, TransactionStatus = TransactionStatus.pending };
+
+            var mockTicketResponse = new GetTicketInfoResponse
+            {
+                IdTournament = 1,
+                IdTicket = 10,
+                Status = TicketStatus.GENERATED
+            };
+
+            _eventBusProducerMock
+           .Setup(x => x.SendRequest<int, GetTicketInfoResponse>(
+               It.IsAny<int>(), It.IsAny<string>()))
+           .ReturnsAsync(mockTicketResponse);
+
 
             _transactionsServiceMock.Setup(t => t.GetTransactionBySessionId("session_test"))
                 .ReturnsAsync(transaction);

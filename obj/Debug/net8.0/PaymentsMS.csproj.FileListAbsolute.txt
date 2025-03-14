@@ -12,9 +12,11 @@ C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\n
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\PaymentsMS.runtimeconfig.json
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\PaymentsMS.dll
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\PaymentsMS.pdb
+C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\PaymentsMS.xml
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\AutoMapper.dll
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\Castle.Core.dll
+C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\DotNetEnv.dll
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\Humanizer.dll
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\Microsoft.Bcl.AsyncInterfaces.dll
@@ -61,6 +63,7 @@ C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\n
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\NuGet.Frameworks.dll
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\Pipelines.Sockets.Unofficial.dll
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\RabbitMQ.Client.dll
+C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\Sprache.dll
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\StackExchange.Redis.dll
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\Stripe.net.dll
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
@@ -233,8 +236,7 @@ C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\n
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\PaymentsMS.csproj.Up2Date
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\PaymentsMS.dll
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\refint\PaymentsMS.dll
+C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\PaymentsMS.xml
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\PaymentsMS.pdb
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\PaymentsMS.genruntimeconfig.cache
 C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\obj\Debug\net8.0\ref\PaymentsMS.dll
-C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\DotNetEnv.dll
-C:\Users\dr734\OneDrive\Escritorio\assessment\E-Sports\TransactionMS\bin\Debug\net8.0\Sprache.dll

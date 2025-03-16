@@ -23,7 +23,6 @@ Para ejecutar el proyecto UsersAuthorization, sigue estos pasos:
 
 - Asegúrate de tener una base de datos PostgreSQL en funcionamiento.
 - Configura las variables de entorno necesarias o modifica los archivos appsettings.json, según sea necesario.
-- Navega al directorio del proyecto UsersAuthorization.
 - Ejecuta el siguiente comando para aplicar las migraciones de la base de datos: `dotnet ef database update`
 - Ejecuta el siguiente comando para iniciar el proyecto: `dotnet run`
 
@@ -324,6 +323,7 @@ Al igual que en las ventas de tickets, se debe hacer la respectiva validacion de
 
 
 ## RabbitMQ/LavinMQ
+En el proyecto se hace uso de RabbitMQ como Message Broker para procesamiento de eventos sincronos con el patron de integracion Request/Reply. 
 
 ### Colas de procesamiento sincrono(request/reply): 
 - `ticket.user.tournament`: cola usada para validar si el usuario tiene tickets  ya asociados al mismo torneo, para evitar duplicidad de los datos, una vez ya hay una compra confirmada

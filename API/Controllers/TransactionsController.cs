@@ -17,6 +17,7 @@ namespace PaymentsMS.API.Controllers
 {
     [Route("api/v1/transactions")]
     [ApiController]
+    [Authorize]
     public class TransactionsController : ControllerBase
     {
         private readonly ILogger<TransactionsController> _logger;
@@ -32,11 +33,10 @@ namespace PaymentsMS.API.Controllers
         }
 
         /// <summary>
-        /// Creates a sale transaction
+        /// Creates a participant sale transaction on Stripe
         /// </summary>
         /// <param name="saleRequest"></param>
         /// <returns></returns>
-        [Authorize]
         [HttpPost]
         [Route("participant/sale")]
         [Consumes("application/json")]
@@ -70,7 +70,11 @@ namespace PaymentsMS.API.Controllers
             }
         }
 
-        [Authorize]
+        /// <summary>
+        /// Creates a viewer sale transaction on Stripe
+        /// </summary>
+        /// <param name="viewerSale"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("viewer/sale")]
         [Consumes("application/json")]
@@ -113,7 +117,6 @@ namespace PaymentsMS.API.Controllers
         /// </summary>
         /// <param name="donationRequest"></param>
         /// <returns></returns>
-        [Authorize]
         [HttpPost]
         [Route("donation")]
         [Consumes("application/json")]
@@ -148,7 +151,12 @@ namespace PaymentsMS.API.Controllers
 
         }
 
-        [Authorize]
+        /// <summary>
+        /// Validates the transaction status, for creating confirmation on transactions db
+        /// </summary>
+        /// <param name="transactionRequest"></param>
+        /// <returns></returns>
+        /// <exception cref="BusinessRuleException"></exception>
         [HttpPost]
         [Route("status")]
         [Consumes("application/json")]

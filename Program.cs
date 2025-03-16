@@ -20,14 +20,14 @@ builder.Configuration.AddEnvironmentVariables();
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-builder.Services.AddNpgsql<TransactionsDbContext>(builder.Configuration.GetConnectionString("dbConnectionTransactions"));
+builder.Services.AddNpgsql<TransactionsDbContext>(builder.Configuration.GetConnectionString("dbConnectionTransactions")); 
 
 // Add services to the container.
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 }); ;
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {

@@ -3,6 +3,7 @@ using PaymentsMS.Application.DTOs.commons;
 using PaymentsMS.Application.DTOs.Request;
 using PaymentsMS.Application.DTOs.Response;
 using PaymentsMS.Application.Interfaces;
+using PaymentsMS.Application.Messages;
 using PaymentsMS.Domain.Entities;
 using PaymentsMS.Domain.Enums;
 using PaymentsMS.Domain.Exceptions;
@@ -18,6 +19,7 @@ namespace PaymentsMS.Application.Services
         private readonly ILogger<DonationService> _logger;
         private readonly ICreateRepository<Donations> _donationsCreateRepo;
         private readonly IRedisService _redisService;
+        private readonly IEventBusProducer _eventBusProducer;
 
         private const string PREFIX_KEY_REDIS = "PaymentsMSDonations";
         private TimeSpan DEFAULT_EXPIRATION_REDIS = TimeSpan.FromDays(7);
@@ -25,9 +27,11 @@ namespace PaymentsMS.Application.Services
         public DonationService(
             ISessionStripe sessionStripe, ITransactionsService transactionsService,
             ILogger<DonationService> logger, ICreateRepository<Donations> createRepository,
-            IComissionService comissionService, IRedisService redisService
+            IComissionService comissionService, IRedisService redisService,
+            IEventBusProducer eventBusProducer
             )
         {
+            _eventBusProducer = eventBusProducer;
             _transactionsService = transactionsService;
             _sessionStripe = sessionStripe;
             _logger = logger;
@@ -55,7 +59,7 @@ namespace PaymentsMS.Application.Services
                 IdTournament = donation.IdTournament,
             };
 
-            _redisService.SetValue($"{PREFIX_KEY_REDIS}-{session.SessionId}",JsonConvert.SerializeObject(info2Cached), DEFAULT_EXPIRATION_REDIS);
+            _redisService.SetValue($"{PREFIX_KEY_REDIS}-{session.SessionId}", JsonConvert.SerializeObject(info2Cached), DEFAULT_EXPIRATION_REDIS);
 
             //create the donation
             /*Donations donationCreate = new Donations
@@ -75,7 +79,7 @@ namespace PaymentsMS.Application.Services
             var transaction = await _transactionsService.GetTransactionBySessionId(request.SessionId);
 
             if (transaction == null) throw new BusinessRuleException("Transaction not found");
-            
+
             if (transaction.TransactionType != TransactionType.DONATION) throw new BusinessRuleException("Transaction type is not valid");
 
             var statusTransaction = new StatusTransactionDTO
@@ -91,17 +95,16 @@ namespace PaymentsMS.Application.Services
 
                 //Get the cached info donation
                 string key = $"{PREFIX_KEY_REDIS}-{request.SessionId}";
-                var donationInfoCached =_redisService.GetValue(key);
+                var donationInfoCached = _redisService.GetValue(key);
 
                 if (donationInfoCached == null) throw new BusinessRuleException("Session has expired or does not exist");
-               
+
                 _logger.LogInformation($"{donationInfoCached}");
 
                 var donationInfo = JsonConvert.DeserializeObject<CacheInfoDonationDTO>(donationInfoCached);
-                
+
                 await _transactionsService.UpdateTransactionStatus(transaction.Id, TransactionStatus.succeeded);
                 await _comissionService.TakeComission(transaction.Id, transaction.Quantity);
-
 
                 //create the donation
                 Donations donationCreate = new Donations
@@ -112,6 +115,15 @@ namespace PaymentsMS.Application.Services
                     IdTransaction = transaction.Id,
                 };
                 await _donationsCreateRepo.CreateAsync(donationCreate);
+                var success = new EmailNotificationRequest
+                {
+
+                    IdUser = donationInfo.IdUser,
+                    Body = $"Transaction for ${transaction.Quantity}COP has been successfull",
+                    Subject = "Donation"
+                };
+
+                await _eventBusProducer.PublishEventAsync<EmailNotificationRequest>(success, Queues.Queues.SEND_EMAIL_DONATION);
 
                 _redisService.DeleteKey(key);
 
@@ -119,8 +131,20 @@ namespace PaymentsMS.Application.Services
             }
             else if (!transaction.TransactionStatus.Equals(TransactionStatus.succeeded))
             {
+                string key = $"{PREFIX_KEY_REDIS}-{request.SessionId}";
+                var donationInfoCached = _redisService.GetValue(key);
+                var donationInfo = JsonConvert.DeserializeObject<CacheInfoDonationDTO>(donationInfoCached);
+
                 await _transactionsService.UpdateTransactionStatus(transaction.Id, TransactionStatus.failed);
                 statusTransaction.Status = TransactionStatus.failed;
+                var failed = new EmailNotificationRequest
+                {
+                    IdUser = donationInfo.IdUser,
+                    Body = $"Transaction for ${transaction.Quantity}COP has failed",
+                    Subject = "Donation"
+                };
+
+                await _eventBusProducer.PublishEventAsync<EmailNotificationRequest>(failed, Queues.Queues.SEND_EMAIL_DONATION);
             }
             else
             {

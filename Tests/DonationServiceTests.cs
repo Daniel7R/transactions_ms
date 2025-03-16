@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Moq;
 using Newtonsoft.Json;
 using PaymentsMS.Application.DTOs.commons;
 using PaymentsMS.Application.DTOs.Request;
@@ -21,6 +22,7 @@ namespace PaymentsMS.Tests
         private readonly Mock<ICreateRepository<Donations>> _donationsCreateRepoMock;
         private readonly Mock<IRedisService> _redisServiceMock;
         private readonly DonationService _donationService;
+        private readonly Mock<IEventBusProducer> _eventBusProducer;
 
         public DonationServiceTests()
         {
@@ -30,6 +32,7 @@ namespace PaymentsMS.Tests
             _comissionServiceMock = new Mock<IComissionService>();
             _redisServiceMock = new Mock<IRedisService>();
             _loggerMock = new Mock<ILogger<DonationService>>();
+            _eventBusProducer = new Mock<IEventBusProducer>();
 
             _donationService = new DonationService(
                 _sessionStripeMock.Object,
@@ -37,7 +40,8 @@ namespace PaymentsMS.Tests
                 _loggerMock.Object,
                 _donationsCreateRepoMock.Object,
                 _comissionServiceMock.Object,
-                _redisServiceMock.Object
+                _redisServiceMock.Object,
+                _eventBusProducer.Object
             );
         }
         [Fact]
@@ -177,6 +181,12 @@ namespace PaymentsMS.Tests
                 TransactionType = TransactionType.DONATION
             };
 
+            var cachedDonation = JsonConvert.SerializeObject(new CacheInfoDonationDTO
+            {
+                IdUser = 1,
+                IdTournament = 2
+            });
+
             _transactionsServiceMock
                 .Setup(t => t.GetTransactionBySessionId(request.SessionId))
                 .ReturnsAsync(transaction);
@@ -187,8 +197,11 @@ namespace PaymentsMS.Tests
 
             _transactionsServiceMock
                 .Setup(t => t.UpdateTransactionStatus(transaction.Id, TransactionStatus.failed))
-                .ReturnsAsync(It.IsAny<Transactions>());
+            .ReturnsAsync(It.IsAny<Transactions>());
 
+            _redisServiceMock
+                .Setup(r => r.GetValue(It.Is<string>(k => k.Contains(request.SessionId))))
+                .Returns(cachedDonation);
             // Act
             var result = await _donationService.ValidateDonation(request);
 

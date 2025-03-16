@@ -21,9 +21,9 @@ namespace PaymentsMS.Infrastructure.EventBus
 
         private async Task InitializeAsync()
         {
-            var basePath = AppContext.BaseDirectory;
-            var pfxCertPath = Path.Combine(basePath, "Infrastructure", "Security", _rabbitmqSettings.CertFile);
-            if (!File.Exists(pfxCertPath)) throw new FileNotFoundException("PFX certificate not found");
+            // var basePath = AppContext.BaseDirectory;
+            // var pfxCertPath = Path.Combine(basePath, "Infrastructure", "Security", _rabbitmqSettings.CertFile);
+            // if (!File.Exists(pfxCertPath)) throw new FileNotFoundException("PFX certificate not found");
 
             var factory = new ConnectionFactory
             {
@@ -34,14 +34,15 @@ namespace PaymentsMS.Infrastructure.EventBus
                 AutomaticRecoveryEnabled = true,
                 NetworkRecoveryInterval = TimeSpan.FromSeconds(5),
                 ContinuationTimeout = TimeSpan.FromSeconds(5),
-                Ssl = new SslOption
-                {
-                    Enabled = true,
-                    ServerName = _rabbitmqSettings.ServerName,
-                    CertPath = pfxCertPath,
-                    CertPassphrase = _rabbitmqSettings.CertPassphrase,
-                    Version = System.Security.Authentication.SslProtocols.Tls12
-                }
+                 VirtualHost= _rabbitmqSettings.Username
+                // Ssl = new SslOption
+                // {
+                //     Enabled = true,
+                //     ServerName = _rabbitmqSettings.ServerName,
+                //     CertPath = pfxCertPath,
+                //     CertPassphrase = _rabbitmqSettings.CertPassphrase,
+                //     Version = System.Security.Authentication.SslProtocols.Tls12
+                // }
             };
             _connection = await factory.CreateConnectionAsync();
             _channel = await _connection.CreateChannelAsync();

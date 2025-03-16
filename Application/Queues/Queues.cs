@@ -11,8 +11,12 @@
         public const string GET_TICKET_INFO = "ticket.info";
         public const string SELL_TICKET_PARTICIPANT = "ticket.participant.sale";
         public const string SELL_TICKET_VIEWER = "ticket.viewer.sale";
+        public const string VALIDATE_USER_HAS_TICKETS_TOURNAMENT = "ticket.user.tournament";
         //consumed in NotificationsAndAlerts
-        public const string SEND_EMAIL = "email.send_async";
+        public const string SEND_EMAIL_DONATION = "donation.email";
+
+        //add user to teams
+        public const string ASSIGN_TEAM = "team.assign";
 
         //consume
     }

@@ -21,6 +21,8 @@ namespace PaymentsMS.Application.Services
         private readonly ILogger<SaleService> _logger;
         private readonly IRedisService _redisService;
 
+        private const string IS_FREE = "IS_FREE";
+
         private const string PREFIX_KEY_REDIS = "PaymentsMSale";
         private TimeSpan DEFAULT_EXPIRATION_REDIS = TimeSpan.FromDays(7);
         public SaleService(ISessionStripe sessionStripe, ITransactionsService transactionsService, ILogger<SaleService> logger, IEventBusProducer eventBusProducer, IRedisService redisService)
@@ -44,14 +46,18 @@ namespace PaymentsMS.Application.Services
             switch (sale)
             {
                 case SaleParticipantRequestDTO partipant:
-                    // 1) request tournament info
+
+                    //validar si tiene tickets ya en el torneo
+                    bool hasTicketsTournament = await ValidateHasAlreadyTicketsTournament(userId, partipant.Details.IdTournament);
+
+                    if (hasTicketsTournament == true) throw new BusinessRuleException("User already has ticket for same tournament");
+                    
                     bool isFree = await ValidateIsFreeTournament(partipant.Details.IdTournament);
-                    // 2) price according if it's free
                     price = isFree == false ? (decimal)PricesSales.PAID_PARTICIPANT : (decimal)PricesSales.FREE_PARTICIPANT;
-                    // 3) get and validate ticket info
                     var ticket = await GetTicketInfo(partipant.Details.IdTicket);
+                    if(!ticket.Status.Equals(TicketStatus.GENERATED)) throw new BusinessRuleException("Ticket is not available");
+                    if (ticket.IdTournament != partipant.Details.IdTournament) throw new BusinessRuleException("Ticket does not belong to the provided tournament");
                     infoSale.IdTicket = ticket.IdTicket;
-                    // 4) create payment session
                     partipant.Details.IsFree = isFree;
 
                     session = await _sessionStripe.CreateSession(partipant);
@@ -79,6 +85,15 @@ namespace PaymentsMS.Application.Services
             _redisService.SetValue($"{PREFIX_KEY_REDIS}-{session.SessionId}", JsonConvert.SerializeObject(infoSale), DEFAULT_EXPIRATION_REDIS);
 
             return session;
+        }
+
+        private async Task<bool> ValidateHasAlreadyTicketsTournament(int  idUser, int tournamentId)
+        {
+            GetTicketUserTournament ticketTournamentUser = new GetTicketUserTournament { IdTournament = tournamentId, IdUser = idUser};
+            //if true, user already has ticket for tournament, to avoid duplicates
+            bool response = await _eventBusProducer.SendRequest<GetTicketUserTournament, bool>(ticketTournamentUser, Queues.Queues.VALIDATE_USER_HAS_TICKETS_TOURNAMENT);
+
+            return response;
         }
 
         private async Task<bool> ValidateIsFreeTournament(int idTournament)
@@ -112,8 +127,7 @@ namespace PaymentsMS.Application.Services
 
             if (match.IdMatch == 0) throw new BusinessRuleException("Match does not exist");
 
-            if (match.Status != MatchStatus.ONGOING || match.Status != MatchStatus.PENDING)
-                throw new BusinessRuleException("Invalid match ticket for sale(match status is not ONGOING or PENDING");
+            if (!match.Status.Equals(MatchStatus.ONGOING) && !match.Status.Equals(MatchStatus.PENDING) ) throw new BusinessRuleException("Invalid match ticket for sale(match status is not ONGOING or PENDING");
         }
 
         public async Task<StatusTransactionDTO> ValidateSale(TransactionStatusRequestDTO request)
@@ -125,7 +139,7 @@ namespace PaymentsMS.Application.Services
 
             if (transaction == null) throw new BusinessRuleException("Transaction not found");
 
-            if (transaction.TransactionType != TransactionType.SALE) throw new BusinessRuleException("Transaction type is not valid");
+            if (!transaction.TransactionType.Equals(TransactionType.SALE)) throw new BusinessRuleException("Transaction type is not valid");
 
             var statusTransaction = new StatusTransactionDTO
             {
@@ -133,7 +147,7 @@ namespace PaymentsMS.Application.Services
             };
             var paymentIntentStatus = await _sessionStripe.GetPaymentIntent(request.SessionId);
             //FAULTED when payment total is 0
-            if (paymentIntentStatus.Equals(TransactionStatus.succeeded.ToString()) && !transaction.TransactionStatus.Equals(TransactionStatus.succeeded))
+            if (paymentIntentStatus.Equals(IS_FREE) || (paymentIntentStatus.Equals(TransactionStatus.succeeded.ToString()) && !transaction.TransactionStatus.Equals(TransactionStatus.succeeded)))
             {
                 //update transaction status
                 string key = $"{PREFIX_KEY_REDIS}-{request.SessionId}";
@@ -169,13 +183,26 @@ namespace PaymentsMS.Application.Services
                         IdUser = saleInfo.IdUser,
                         IdTransaction = transaction.Id
                     };
+
                     await _eventBusProducer.PublishEventAsync<GenerateTicketSale>(ticketParticipant, Queues.Queues.SELL_TICKET_PARTICIPANT);
+
+                    var infoTicket = await GetTicketInfo((int)saleInfo.IdTicket);
+
+                    if(infoTicket.IdTournament != 0 && infoTicket.IdTournament != null)
+                    {
+                        var teamMember = new AssignTeamMemberRequest
+                        {
+                            IdUser = saleInfo.IdUser,
+                            IdTournament = (int)infoTicket.IdTournament
+                        };
+                        //assign participant to team
+                        await _eventBusProducer.PublishEventAsync<AssignTeamMemberRequest>(teamMember, Queues.Queues.ASSIGN_TEAM);
+
+                    } 
                 }
             }
-            else if (paymentIntentStatus == "Faulted")
+            else if (paymentIntentStatus.Equals(TransactionStatus.succeeded))
             {
-                string key = $"{PREFIX_KEY_REDIS}-{request.SessionId}";
-                await _transactionsService.UpdateTransactionStatus(transaction.Id, TransactionStatus.succeeded);
                 statusTransaction.Status = TransactionStatus.succeeded;
 
             }

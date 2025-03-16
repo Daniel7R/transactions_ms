@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace PaymentsMS.Migrations
 {
     /// <inheritdoc />
-    public partial class updatedonations : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -23,7 +23,8 @@ namespace PaymentsMS.Migrations
                     transaction_type = table.Column<string>(type: "text", nullable: false),
                     transaction_start_date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     transaction_completed_date = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    transaction_status = table.Column<string>(type: "text", nullable: false)
+                    transaction_status = table.Column<string>(type: "text", nullable: false),
+                    id_name = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -57,6 +58,7 @@ namespace PaymentsMS.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    id_user = table.Column<int>(type: "integer", nullable: false),
                     id_tournament = table.Column<int>(type: "integer", nullable: false),
                     id_transaction = table.Column<int>(type: "integer", nullable: false)
                 },

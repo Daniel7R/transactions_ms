@@ -190,6 +190,42 @@ Una vez realizado el pago, se debe llamar la api de validacion al igual que el e
 ```
 
 
+#### Venta Ticket Espectadores
+
+### Viewers
+Para la compra de tickets para las transmisiones de los eventos, cuyo  precio son $5.000,
+
+- [POST] `/api/v1/transactions/viewer/sale`
+
+***Headers***:
+    - **Authorization**: Bearer some-token
+
+***Body***:
+```
+{
+    "sessionUrl": "",
+    "sessionId": "",
+    "approvedUrl": "https://example.com/approved",
+    "cancelUrl": "https://example.com/cancel",
+    "idMatch": 2
+}
+```
+
+***Respuesta***:
+```
+{
+    "result": {
+        "sessionUrl": "https://checkout.stripe.com/c/pay/cs_test_a18258A2IvrPSl4aNef8Y20aOmbrSYibpaYkXjOi1GB9QxgIBlIuxTMd4d#fidkdWxOYHwnPyd1blpxYHZxWjA0VHYxPXFXN0tGNUtmPEFtb1xdcU5pVU5IVVxXRkxkblZmVjFzcXN9c2BVVGBwR0xrUHFrd3w1aV98MTJ1bk9UblJKYEAwS39CPHdoTkpXbXc3M0ptUE1VNTU1X393b2RCXScpJ2N3amhWYHdzYHcnP3F3cGApJ2lkfGpwcVF8dWAnPyd2bGtiaWBabHFgaCcpJ2BrZGdpYFVpZGZgbWppYWB3dic%2FcXdwYHgl",
+        "sessionId": "cs_test_a18258A2IvrPSl4aNef8Y20aOmbrSYibpaYkXjOi1GB9QxgIBlIuxTMd4d",
+        "approvedUrl": "https://example.com/approved",
+        "cancelUrl": "https://example.com/cancel"
+    },
+    "message": ""
+}
+```
+![Viewer](./images//sale-viewer.png)
+Al igual que con los otros tipos de venta, se debe validar el estado de la transaccion, mandando la peticion de validacion de estado de la transaccion con el respectivo sessionId, como se muestra a continuacion:
+
 ### Donaciones
 
 #### donation

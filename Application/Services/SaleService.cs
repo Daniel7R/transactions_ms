@@ -127,8 +127,7 @@ namespace PaymentsMS.Application.Services
 
             if (match.IdMatch == 0) throw new BusinessRuleException("Match does not exist");
 
-            if (match.Status != MatchStatus.ONGOING || match.Status != MatchStatus.PENDING)
-                throw new BusinessRuleException("Invalid match ticket for sale(match status is not ONGOING or PENDING");
+            if (!match.Status.Equals(MatchStatus.ONGOING) && !match.Status.Equals(MatchStatus.PENDING) ) throw new BusinessRuleException("Invalid match ticket for sale(match status is not ONGOING or PENDING");
         }
 
         public async Task<StatusTransactionDTO> ValidateSale(TransactionStatusRequestDTO request)
@@ -140,7 +139,7 @@ namespace PaymentsMS.Application.Services
 
             if (transaction == null) throw new BusinessRuleException("Transaction not found");
 
-            if (transaction.TransactionType != TransactionType.SALE) throw new BusinessRuleException("Transaction type is not valid");
+            if (!transaction.TransactionType.Equals(TransactionType.SALE)) throw new BusinessRuleException("Transaction type is not valid");
 
             var statusTransaction = new StatusTransactionDTO
             {

@@ -39,6 +39,5 @@ ENV Redis__ConnectionString=${Redis__ConnectionString}
 RUN echo "Variables cargadas: $RabbitMQ__Host"
 
 EXPOSE 8083
-COPY --from=publish /app/publish .
 
 ENTRYPOINT ["dotnet", "PaymentsMS.dll"]

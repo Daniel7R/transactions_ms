@@ -485,3 +485,5 @@ C:\Users\daniel.riverar_pragm\Desktop\Ms\transactions_ms\obj\Debug\net8.0\static
 C:\Users\daniel.riverar_pragm\Desktop\Ms\transactions_ms\obj\Debug\net8.0\PaymentsMS.csproj.Up2Date
 C:\Users\daniel.riverar_pragm\Desktop\Ms\transactions_ms\obj\Debug\net8.0\PaymentsMS.genruntimeconfig.cache
 C:\Users\daniel.riverar_pragm\Desktop\Ms\transactions_ms\obj\Debug\net8.0\ref\PaymentsMS.dll
+C:\Users\daniel.riverar_pragm\Desktop\Ms\transactions_ms\bin\Debug\net8.0\Prometheus.NetStandard.dll
+C:\Users\daniel.riverar_pragm\Desktop\Ms\transactions_ms\bin\Debug\net8.0\Prometheus.AspNetCore.dll

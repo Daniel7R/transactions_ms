@@ -12,6 +12,7 @@ using Stripe.Checkout;
 using System.Text.Json.Serialization;
 using DotNetEnv;
 using Microsoft.OpenApi.Models;
+using Prometheus;
 
 
 Env.Load();
@@ -65,6 +66,8 @@ builder.Services.AddHostedService<EventBusProducer>();
 builder.AddAppAuthentication();
 builder.Services.AddAuthorization();
 
+Metrics.SuppressDefaultMetrics();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -76,9 +79,16 @@ if (app.Environment.IsDevelopment())
 
 StripeConfiguration.ApiKey = builder.Configuration.GetValue<string>("Stripe:Secret");
 
-app.UseHttpsRedirection();
-
+app.UseRouting();
+// app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseHttpMetrics();
+
+app.UseEndpoints(endpoints => {
+    endpoints.MapMetrics();
+});
 
 app.MapControllers();
 

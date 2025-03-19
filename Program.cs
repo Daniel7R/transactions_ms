@@ -66,6 +66,8 @@ builder.Services.AddHostedService<EventBusProducer>();
 builder.AddAppAuthentication();
 builder.Services.AddAuthorization();
 
+Metrics.SuppressDefaultMetrics();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
